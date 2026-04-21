@@ -1,10 +1,279 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
-    <title>Panthers DBL</title>
+<meta charset="UTF-8">
+<title>Panthers DBL Poster</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Oswald:wght@500;600;700&display=swap');
+  :root{--gold:#C9A84C;--gold-dark:#8B6914;--gold-light:#E8C870;--black:#060606}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:20px 0 40px;font-family:'Barlow Condensed',sans-serif}
+  .controls{display:flex;gap:12px;margin-bottom:20px;align-items:center;flex-wrap:wrap;justify-content:center}
+  .btn{background:linear-gradient(135deg,#C9A84C,#8B6914);color:#000;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;border:none;padding:12px 32px;cursor:pointer;border-radius:3px;transition:opacity .2s}
+  .btn:hover{opacity:.85}.btn:disabled{opacity:.5;cursor:not-allowed}
+  .hint{color:#888;font-size:13px;letter-spacing:1px}
+  .status{color:#C9A84C;font-size:13px;letter-spacing:2px;min-height:18px;text-align:center;margin-top:4px}
+
+  #poster{position:relative;width:1080px;height:1920px;background:var(--black);overflow:hidden;flex-shrink:0}
+
+  .bg-base{position:absolute;inset:0;background:radial-gradient(ellipse 100% 55% at 58% 22%,rgba(180,138,32,.22) 0%,transparent 65%),radial-gradient(ellipse 60% 40% at 15% 85%,rgba(201,168,76,.07) 0%,transparent 55%),linear-gradient(170deg,#050505 0%,#0e0e0e 45%,#060606 100%)}
+  .bg-grain{position:absolute;inset:0;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");background-size:300px 300px}
+  .bg-court{position:absolute;inset:0;opacity:.04;background-image:repeating-linear-gradient(-30deg,transparent 0px,transparent 58px,rgba(255,255,255,.6) 58px,rgba(255,255,255,.6) 60px)}
+  .stripe-thick{position:absolute;top:0;bottom:0;right:108px;width:8px;background:linear-gradient(180deg,var(--gold) 0%,rgba(201,168,76,.35) 55%,transparent 100%);transform:skewX(-5deg)}
+  .stripe-thin{position:absolute;top:0;bottom:0;right:84px;width:3px;background:linear-gradient(180deg,rgba(201,168,76,.5) 0%,rgba(201,168,76,.1) 65%,transparent 100%);transform:skewX(-5deg)}
+  .stripe-left{position:absolute;top:0;bottom:0;left:72px;width:2px;background:linear-gradient(180deg,transparent 5%,rgba(201,168,76,.12) 30%,rgba(201,168,76,.06) 70%,transparent 100%);transform:skewX(3deg)}
+  .wm{position:absolute;top:680px;right:-30px;font-family:'Bebas Neue',sans-serif;font-size:580px;color:rgba(201,168,76,.04);line-height:1;pointer-events:none;user-select:none;z-index:2}
+
+  .hero-wrap{position:absolute;top:110px;left:0;right:0;height:980px;overflow:hidden}
+  .hero-img{position:absolute;top:0;left:50%;transform:translateX(-50%);width:1080px;height:980px;object-fit:cover;object-position:center 8%}
+  .hf-top{position:absolute;top:0;left:0;right:0;height:140px;background:linear-gradient(180deg,var(--black) 0%,transparent 100%)}
+  .hf-bot{position:absolute;bottom:0;left:0;right:0;height:640px;background:linear-gradient(0deg,var(--black) 0%,rgba(6,6,6,.88) 28%,rgba(6,6,6,.45) 58%,transparent 100%)}
+  .hf-l{position:absolute;top:0;left:0;bottom:0;width:160px;background:linear-gradient(90deg,var(--black) 0%,transparent 100%)}
+  .hf-r{position:absolute;top:0;right:0;bottom:0;width:160px;background:linear-gradient(270deg,var(--black) 0%,transparent 100%)}
+
+  .header{position:absolute;top:0;left:0;right:0;height:115px;z-index:60;display:flex;align-items:center;justify-content:space-between;padding:0 56px;background:linear-gradient(180deg,rgba(0,0,0,.88) 0%,transparent 100%)}
+  .logo-img{width:105px;height:105px;object-fit:contain;filter:drop-shadow(0 0 22px rgba(201,168,76,.55))}
+  .header-right{text-align:right}
+  .header-name{font-family:'Bebas Neue',sans-serif;font-size:50px;color:var(--gold);letter-spacing:8px;line-height:1}
+  .header-zh{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:rgba(255,255,255,.38);letter-spacing:7px;margin-top:5px}
+
+  .title-block{position:absolute;top:990px;left:56px;right:56px;z-index:30}
+  .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;color:var(--gold);letter-spacing:10px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+  .eyebrow::before{content:'';display:inline-block;width:28px;height:3px;background:var(--gold)}
+  .main-title{font-family:'Bebas Neue',sans-serif;font-size:168px;line-height:.87;letter-spacing:4px;color:#fff}
+  .main-title .ac{color:var(--gold)}
+  .sub-title{font-family:'Bebas Neue',sans-serif;font-size:52px;color:rgba(255,255,255,.65);letter-spacing:14px;margin-top:14px}
+
+  .rule{position:absolute;top:1264px;left:56px;right:56px;height:2px;z-index:30;background:linear-gradient(90deg,var(--gold) 0%,rgba(201,168,76,.25) 70%,transparent 100%)}
+
+  .info-sec{position:absolute;top:1296px;left:56px;right:56px;z-index:30;display:flex;flex-direction:column;gap:30px}
+  .info-row{display:flex;gap:18px;align-items:flex-start}
+  .icon-pill{width:50px;height:50px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 100%);display:flex;align-items:center;justify-content:center;font-size:24px;margin-top:2px}
+  .info-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;color:var(--gold);letter-spacing:5px;text-transform:uppercase;margin-bottom:3px}
+  .info-val{font-family:'Oswald',sans-serif;font-weight:600;font-size:30px;color:#fff;line-height:1.2}
+  .info-note{font-family:'Barlow Condensed',sans-serif;font-size:19px;color:rgba(255,255,255,.52);margin-top:3px;line-height:1.45;letter-spacing:.5px}
+  .price-card{display:flex;align-items:center;gap:24px;padding:20px 28px;background:linear-gradient(135deg,rgba(201,168,76,.13) 0%,rgba(201,168,76,.04) 100%);border:1.5px solid rgba(201,168,76,.32);border-radius:6px;margin-top:4px;position:relative;overflow:hidden}
+  .price-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--gold) 0%,var(--gold-dark) 100%)}
+  .price-num{font-family:'Bebas Neue',sans-serif;font-size:82px;color:var(--gold);line-height:1;flex-shrink:0;letter-spacing:2px;padding-left:12px}
+  .price-per{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:rgba(255,255,255,.4);letter-spacing:4px;text-transform:uppercase;margin-bottom:8px}
+  .price-inc{font-family:'Barlow Condensed',sans-serif;font-size:21px;color:rgba(255,255,255,.82);line-height:1.55}
+  .price-inc b{color:var(--gold-light);font-weight:700}
+
+  .bottom{position:absolute;bottom:0;left:0;right:0;height:295px;z-index:50;display:flex;align-items:center;gap:44px;padding:0 56px;background:linear-gradient(0deg,#000 0%,rgba(0,0,0,.96) 55%,transparent 100%);border-top:1px solid rgba(201,168,76,.16)}
+  .qr-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;flex-shrink:0}
+  .qr-border{padding:10px;background:#fff;border:3px solid var(--gold);box-shadow:0 0 40px rgba(201,168,76,.4),0 0 80px rgba(201,168,76,.15)}
+  .qr-img{width:185px;height:185px;display:block}
+  .qr-cap{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:var(--gold);letter-spacing:4px;text-align:center}
+  .contact{}
+  .cta{font-family:'Bebas Neue',sans-serif;font-size:54px;color:#fff;letter-spacing:4px;line-height:1}
+  .cbody{font-family:'Barlow Condensed',sans-serif;font-size:20px;color:rgba(255,255,255,.48);line-height:1.7;margin-top:10px;letter-spacing:.3px}
+  .cwechat{font-family:'Oswald',sans-serif;font-size:23px;font-weight:600;color:var(--gold);margin-top:12px;letter-spacing:1px}
+  .bot-bar{position:absolute;bottom:0;left:0;right:0;height:5px;z-index:70;background:linear-gradient(90deg,transparent 0%,var(--gold) 15%,var(--gold-dark) 50%,var(--gold) 80%,transparent 100%)}
+  .deco-ring{position:absolute;top:820px;left:50%;transform:translateX(-50%);width:800px;height:350px;border:1.5px solid rgba(255,255,255,.025);border-radius:50%;z-index:2;pointer-events:none}
+  .deco-ring2{position:absolute;top:900px;left:50%;transform:translateX(-50%);width:480px;height:200px;border:1px solid rgba(201,168,76,.05);border-radius:50%;z-index:2;pointer-events:none}
+</style>
 </head>
 <body>
-    <h1>Welcome to Panthers DBL</h1>
-    <!-- Your content here -->
+
+
+</div>
+</div>
+
+<div id="poster">
+  <div class="bg-base"></div><div class="bg-grain"></div><div class="bg-court"></div>
+  <div class="stripe-thick"></div><div class="stripe-thin"></div><div class="stripe-left"></div>
+  <div class="wm">4</div>
+  <div class="deco-ring"></div><div class="deco-ring2"></div>
+
+  <div class="hero-wrap">
+    <img class="hero-img" id="heroImg" src="IMG_3028.JPG" alt="">
+    <div class="hf-top"></div><div class="hf-l"></div><div class="hf-r"></div><div class="hf-bot"></div>
+  </div>
+
+  <div class="header">
+    <img class="logo-img" id="logoImg" src="Panthers Logo.JPG" alt="Panthers">
+    <div class="header-right">
+      <div class="header-name">SNS PANTHERS</div>
+      <div class="header-zh">黑 豹 篮 球 俱 乐 部</div>
+    </div>
+  </div>
+
+  <div class="title-block">
+    <div class="eyebrow">Official Tournament</div>
+    <div class="main-title">DBL<span class="ac"></span></div>
+    <div class="sub-title">BASKETBALL LEAGUE</div>
+  </div>
+  <div class="rule"></div>
+
+  <div class="info-sec">
+    <div class="info-row">
+      <div class="icon-pill">📅</div>
+      <div>
+        <div class="info-lbl">Time &amp; Venue</div>
+        <div class="info-val">每周六 &amp; 周日&ensp;上午</div>
+        <div class="info-note">哈罗国际学校 &nbsp;·&nbsp; Harrow International School</div>
+      </div>
+    </div>
+    <div class="info-row">
+      <div class="icon-pill">🏀</div>
+      <div>
+        <div class="info-lbl">Game Format</div>
+        <div class="info-val">小篮球&ensp;4 v 4</div>
+        <div class="info-note">上下半场各 15 分钟 &nbsp;·&nbsp; 每队 2–3 场比赛</div>
+      </div>
+    </div>
+    <div class="price-card">
+      <div class="price-num">¥800</div>
+      <div>
+        <div class="price-per">Per Team &nbsp;·&nbsp; 每队报名费</div>
+        <div class="price-inc"><b>✓ 场地</b>&ensp;·&ensp;<b>✓ 专业摄影</b>&ensp;·&ensp;<b>✓ 赛事全程服务</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="qr-wrap">
+      <div class="qr-border"><img class="qr-img" id="qrImg" src="Panthers微信二维码.jpg" alt="WeChat QR"></div>
+      <div class="qr-cap">WECHAT &nbsp;·&nbsp; 扫码联系</div>
+    </div>
+    <div class="contact">
+      <div class="cta">JOIN THE<br>LEAGUE NOW</div>
+      <div class="cbody">扫描微信二维码即刻报名<br>加入赛事群 &nbsp;·&nbsp; 了解更多赛事信息</div>
+      <div class="cwechat">SNS Panthers&ensp;黑豹</div>
+    </div>
+  </div>
+  <div class="bot-bar"></div>
+</div>
+
+<script>
+const IMAGES = [
+  { id: 'heroImg',  label: 'Hero photo (basketball kid)',  hint: 'Paste base64 or URL of IMG_3028.JPG' },
+  { id: 'logoImg',  label: 'Panthers Logo',               hint: 'Paste base64 or URL of Panthers_Logo.JPG' },
+  { id: 'qrImg',   label: 'WeChat QR code',              hint: 'Paste base64 or URL of Panthers微信二维码.jpg' },
+];
+
+// Try loading via Anthropic API — this calls the API with vision to get the images
+async function loadImages() {
+  const btn = document.getElementById('loadBtn');
+  const status = document.getElementById('status');
+  btn.disabled = true;
+
+  const imageRequests = [
+    { id: 'heroImg',  description: 'The basketball action photo of a young player jumping to shoot, court background, Panthers jersey' },
+    { id: 'logoImg',  description: 'The Panthers black panther head logo on white background' },
+    { id: 'qrImg',   description: 'The WeChat QR code with SNS Panthers 黑豹 label' },
+  ];
+
+  // Since we cannot load from disk, prompt user to paste their images
+  // Show the input form
+  showImageInputForm();
+}
+
+function showImageInputForm() {
+  const status = document.getElementById('status');
+  status.textContent = '';
+
+  // Create modal overlay
+  const modal = document.createElement('div');
+  modal.id = 'imgModal';
+  modal.style.cssText = `
+    position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:1000;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:24px;padding:40px;
+  `;
+
+  const title = document.createElement('div');
+  title.style.cssText = 'font-family:"Bebas Neue",sans-serif;font-size:36px;color:#C9A84C;letter-spacing:6px;';
+  title.textContent = 'LOAD YOUR IMAGES';
+  modal.appendChild(title);
+
+  const desc = document.createElement('div');
+  desc.style.cssText = 'color:rgba(255,255,255,0.6);font-size:15px;letter-spacing:1px;text-align:center;max-width:600px;line-height:1.7;';
+  desc.innerHTML = 'Upload or drag-and-drop your 3 images below.<br>They will be embedded directly into the poster.';
+  modal.appendChild(desc);
+
+  const slots = [
+    { id:'heroImg',  label:'🏀 Hero Photo (IMG_3028.JPG)' },
+    { id:'logoImg', label:'🐆 Panthers Logo' },
+    { id:'qrImg',   label:'📱 WeChat QR Code' },
+  ];
+
+  slots.forEach(slot => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;flex-direction:column;gap:8px;width:100%;max-width:500px;';
+
+    const lbl = document.createElement('div');
+    lbl.style.cssText = 'color:#C9A84C;font-size:14px;font-family:"Barlow Condensed",sans-serif;letter-spacing:3px;font-weight:700;';
+    lbl.textContent = slot.label;
+
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*';
+    inp.style.cssText = 'background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);color:#fff;padding:10px 14px;font-size:14px;border-radius:4px;cursor:pointer;width:100%;';
+    inp.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.getElementById(slot.id).src = ev.target.result;
+        lbl.style.color = '#7CFC00';
+        lbl.textContent = '✓ ' + slot.label;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    row.appendChild(lbl);
+    row.appendChild(inp);
+    modal.appendChild(row);
+  });
+
+  const doneBtn = document.createElement('button');
+  doneBtn.textContent = 'APPLY TO POSTER';
+  doneBtn.style.cssText = 'background:linear-gradient(135deg,#C9A84C,#8B6914);color:#000;font-family:"Bebas Neue",sans-serif;font-size:20px;letter-spacing:3px;border:none;padding:14px 48px;cursor:pointer;border-radius:3px;margin-top:8px;';
+  doneBtn.onclick = () => {
+    document.body.removeChild(modal);
+    document.getElementById('status').textContent = '✓ Images applied to poster';
+    document.getElementById('loadBtn').disabled = false;
+    document.getElementById('saveBtn').style.background = 'linear-gradient(135deg,#C9A84C,#8B6914)';
+    document.getElementById('saveBtn').style.color = '#000';
+  };
+  modal.appendChild(doneBtn);
+
+  document.body.appendChild(modal);
+}
+
+async function savePNG() {
+  const btn = document.getElementById('saveBtn');
+  const status = document.getElementById('status');
+  const orig = btn.textContent;
+  btn.textContent = '⏳ RENDERING...';
+  btn.disabled = true;
+  status.textContent = 'Generating high-res PNG…';
+
+  try {
+    const canvas = await html2canvas(document.getElementById('poster'), {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      width: 1080,
+      height: 1920,
+      backgroundColor: '#060606',
+      logging: false,
+    });
+
+    const link = document.createElement('a');
+    link.download = 'Panthers_DBL Poster_2160x3840.png';
+    link.href = canvas.toDataURL('image/png', 1.0);
+    link.click();
+    btn.textContent = '✓ DOWNLOADED!';
+    status.textContent = '✓ PNG saved — 2160×3840px (2× for print quality)';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
+  } catch(e) {
+    btn.textContent = orig; btn.disabled = false;
+    status.textContent = 'Error: ' + e.message;
+  }
+}
+</script>
 </body>
 </html>
